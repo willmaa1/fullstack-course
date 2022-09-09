@@ -1,0 +1,13 @@
+
+note over selain:
+selain käsittelee formin ja
+lehettää datan palvelimelle
+end note
+
+selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+palvelin-->selain: 201 created
+
+note over selain:
+sivu jatkaa toimintaa
+end note
