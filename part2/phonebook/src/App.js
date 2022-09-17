@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
 const Filter = ({newFilter, setNewFilter}) =>
   <div>
@@ -13,12 +13,22 @@ const PersonForm = ({addPerson, newName, setNewName, newNumber, setNewNumber}) =
     <div><button type="submit">add</button></div>
   </form>
 
-const Persons = ({ persons }) => 
-  <div>
+const Persons = ({ persons, setPersons }) => {
+  const confirmDelete = (person) => {
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personService
+        .deletePerson(person.id)
+        .then(setPersons(persons.filter((per)=>per.id !== person.id)))
+    }
+  }
+  return (
+    <div>
     {persons.map((person) => 
-      <p key={person.name}>{person.name} {person.number}</p>
+      <p key={person.name}>{person.name} {person.number} <button onClick={() => confirmDelete(person)} >delete</button></p>
     )}
   </div>
+  )
+} 
 
 
 const App = () => {
@@ -29,8 +39,8 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
   
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
+    personService
+      .getAll()
       .then(response =>{
         setPersons(response.data)
       })
@@ -38,12 +48,26 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    if (persons.some((person) => person.name === newName))
-      alert(`${newName} is already added to phonebook`)
-    else
-      setPersons(persons.concat([{name: newName, number: newNumber}]))
-    // setNewName("")
-    // setNewNumber("")
+    const existing = persons.find((person) => person.name === newName)
+
+    if (existing !== undefined) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const newPerson = { ...existing, number: newNumber }
+        personService
+          .updateNumber(newPerson)
+          .then((response) => {
+            setPersons(persons.map(per => per.id !== newPerson.id ? per : response.data))
+          })
+      }
+    } else {
+      const id = persons.length > 0 ? persons[persons.length-1].id+1 : 1 // id is not added by database
+      const person = {name: newName, number: newNumber, id: id}
+      personService
+        .addPerson(person)
+        .then((response) => {
+          setPersons(persons.concat([response.data]))
+        })
+    }
   }
 
   const filtered = persons.filter((person) => person.name.toLocaleLowerCase().includes(newFilter.toLocaleLowerCase()))
@@ -55,7 +79,7 @@ const App = () => {
       <h2>add a new</h2>
       <PersonForm addPerson={addPerson} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber}/>
       <h2>Numbers</h2>
-      <Persons persons={filtered}/>
+      <Persons persons={filtered} setPersons={setPersons}/>
     </div>
   )
 }
