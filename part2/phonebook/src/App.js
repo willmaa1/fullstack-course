@@ -6,6 +6,25 @@ const Filter = ({newFilter, setNewFilter}) =>
     filter shown with <input value={newFilter} onChange={(e) =>setNewFilter(e.target.value)}/>
   </div>
 
+const Notification = ({notification}) => {
+  if (notification === null) {
+    return null
+  }
+  const styling = {
+    color: notification.color,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 5,
+    background: "lightgrey"
+  }
+
+  return (
+    <div style={styling}>
+      {notification.message}
+    </div>
+  )
+}
+
 const PersonForm = ({addPerson, newName, setNewName, newNumber, setNewNumber}) =>
   <form onSubmit={addPerson}>
     <div>name: <input value={newName} onChange={(e) => setNewName(e.target.value)}/></div>
@@ -13,17 +32,21 @@ const PersonForm = ({addPerson, newName, setNewName, newNumber, setNewNumber}) =
     <div><button type="submit">add</button></div>
   </form>
 
-const Persons = ({ persons, setPersons }) => {
+const Persons = ({ filtered, persons, setPersons, notificationTimeout }) => {
   const confirmDelete = (person) => {
     if (window.confirm(`Delete ${person.name} ?`)) {
       personService
         .deletePerson(person.id)
-        .then(setPersons(persons.filter((per)=>per.id !== person.id)))
+        .then(() => {
+          setPersons(persons.filter((per)=>per.id !== person.id));
+          notificationTimeout(`Deleted ${person.name}`, "green");
+        })
+        .catch(error => notificationTimeout(`Information of ${person.name} has already been deleted from the server`, "red"))
     }
   }
   return (
     <div>
-    {persons.map((person) => 
+    {filtered.map((person) => 
       <p key={person.name}>{person.name} {person.number} <button onClick={() => confirmDelete(person)} >delete</button></p>
     )}
   </div>
@@ -37,13 +60,20 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [notification, setNotification] = useState(null)
+
+  // Utility function for creating a notification with timeout of 5s
+  const notificationTimeout = (message, color) => {
+    setNotification({message, color})
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
   
   useEffect(() => {
     personService
       .getAll()
-      .then(response =>{
-        setPersons(response.data)
-      })
+      .then(allPersons => setPersons(allPersons))
   }, [])
 
   const addPerson = (event) => {
@@ -55,17 +85,20 @@ const App = () => {
         const newPerson = { ...existing, number: newNumber }
         personService
           .updateNumber(newPerson)
-          .then((response) => {
-            setPersons(persons.map(per => per.id !== newPerson.id ? per : response.data))
+          .then((updatedPerson) => {
+            setPersons(persons.map(per => per.id !== updatedPerson.id ? per : updatedPerson))
+            notificationTimeout(`Number of ${updatedPerson.name} changed`, "green")
           })
+          .catch(error => notificationTimeout(`Information of ${newPerson.name} has already been deleted from the server`, "red"))
       }
     } else {
       const id = persons.length > 0 ? persons[persons.length-1].id+1 : 1 // id is not added by database
       const person = {name: newName, number: newNumber, id: id}
       personService
         .addPerson(person)
-        .then((response) => {
-          setPersons(persons.concat([response.data]))
+        .then((addedPerson) => {
+          setPersons(persons.concat([addedPerson]))
+          notificationTimeout(`Added ${addedPerson.name}`, "green")
         })
     }
   }
@@ -75,11 +108,12 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter newFilter={newFilter} setNewFilter={setNewFilter}/>
       <h2>add a new</h2>
       <PersonForm addPerson={addPerson} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber}/>
       <h2>Numbers</h2>
-      <Persons persons={filtered} setPersons={setPersons}/>
+      <Persons filtered={filtered} persons={persons} setPersons={setPersons} notificationTimeout={notificationTimeout}/>
     </div>
   )
 }
