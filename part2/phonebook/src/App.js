@@ -89,17 +89,19 @@ const App = () => {
             setPersons(persons.map(per => per.id !== updatedPerson.id ? per : updatedPerson))
             notificationTimeout(`Number of ${updatedPerson.name} changed`, "green")
           })
-          .catch(error => notificationTimeout(`Information of ${newPerson.name} has already been deleted from the server`, "red"))
+          // Not the most elegant catch but it works
+          .catch(error => notificationTimeout(error.response ? error.response.data.error : `Information of ${newPerson.name} has already been deleted from the server`, "red"))
       }
     } else {
-      const id = persons.length > 0 ? persons[persons.length-1].id+1 : 1 // id is not added by database
-      const person = {name: newName, number: newNumber, id: id}
+      const person = {name: newName, number: newNumber}
       personService
         .addPerson(person)
         .then((addedPerson) => {
+          console.log(addedPerson)
           setPersons(persons.concat([addedPerson]))
           notificationTimeout(`Added ${addedPerson.name}`, "green")
         })
+        .catch(error => notificationTimeout(`${error.response.data.error}`, "red"))
     }
   }
 
