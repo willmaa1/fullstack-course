@@ -2,6 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "Random title",
-  "author": "no author"
+  "title": "Randomasdfd title",
+  "author": "no author",
+  "url": "url.url.url",
+  "likes": 4
 }
