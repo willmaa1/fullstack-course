@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router()
 const Blog = require("../models/blog")
-const User = require('../models/user')
+const User = require("../models/user")
+
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
@@ -12,9 +13,7 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const body = request.body;
 
-  const users = await User.find({})
-  const user = users.at(0) // WARGNING: crashes if no users exist yet
-
+  const user = request.user
 
   const blog = new Blog({
     title: body.title,
@@ -33,6 +32,13 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
+  const user = request.user
+
+  const blog = await Blog.findById(request.params.id)
+  if (!blog || !user || blog.user.toString() !== user.id.toString()) {
+    return response.status(401).json({ error: 'Cannot delete blogs that are not yours' })
+  }
+
   await Blog.findByIdAndRemove(request.params.id)
 
   response.status(204).end()

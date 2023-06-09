@@ -1,5 +1,6 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ld3VzZXIiLCJpZCI6IjY0ODM4YTc2NDQ5NDA1YWMxMDhiNGMwOSIsImlhdCI6MTY4NjM0NDgzNH0.b3f0R3cneWcGjz4j1oxNch5xua5vMxPfm-xeBDTjLYw
 
 {
   "title": "Randomasdfd title",
