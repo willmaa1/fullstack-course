@@ -47,11 +47,18 @@ blogsRouter.delete('/:id', async (request, response) => {
 blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
 
+  const user = request.user
+
   const blog = {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes
+    likes: body.likes,
+    // Note: (Exercise 5.9) I was unsure what was meant by "The backend has to be updated too to handle the user reference."
+    // Below are two versions, one uses the user id that was passed in with the updated blog
+    // while the other updates the bloguser to be the currently active user.
+    user: await User.findById(body.user.id)
+    // user: user
   }
   const result = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true, runValidators: true })
   response.json(result)

@@ -80,6 +80,18 @@ const App = () => {
     setBlogs(blogs)
   }
   
+  const removeBlog = async (blog) => {
+    if (window.confirm(`Remove ${blog.id} by ${blog.author}?`)) {
+      await blogService.remove(blog.id)
+      await refreshBlogs()
+    }
+  }
+
+  const updateBlog = async (blog) => {
+    await blogService.update(blog.id, blog)
+    await refreshBlogs()
+  }
+  
   useEffect(() => {
     refreshBlogs()
   }, [])
@@ -123,8 +135,8 @@ const App = () => {
         </Togglable>
       
         <h2>blogs</h2>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+        {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+          <Blog key={blog.id} blog={blog} removeBlog={removeBlog} updateBlog={updateBlog} user={user}/>
         )}
       </div>
       }
