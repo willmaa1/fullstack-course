@@ -1,4 +1,3 @@
-// TODO: use these notifications (5.4)
 const Notification = ({msg, color = "red"}) => {
     if (msg === null) {
         return null
