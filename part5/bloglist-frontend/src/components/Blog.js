@@ -1,15 +1,15 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-const Blog = ({blog, removeBlog, updateBlog, user}) => {
+const Blog = ({ blog, removeBlog, updateBlog, user }) => {
   const [collapsed, setCollapsed] = useState(false)
 
   const blogExpanded = () => {
     return (
       <>
-      <div>{blog.url}</div>
-      <div>likes {blog.likes} <button onClick={() => { blog.likes++; updateBlog(blog) }}>like</button></div> 
-      <div>{blog.user.username}</div>
-      { blog.user.username !== user.username ? '' : <button onClick={() => removeBlog(blog)}>remove</button> }
+        <div>{blog.url}</div>
+        <div>likes {blog.likes} <button onClick={() => { blog.likes++; updateBlog(blog) }}>like</button></div>
+        <div>{blog.user.username}</div>
+        { blog.user.username !== user.username ? '' : <button onClick={() => removeBlog(blog)}>remove</button> }
       </>
     )
   }
@@ -23,13 +23,13 @@ const Blog = ({blog, removeBlog, updateBlog, user}) => {
   }
 
   return (
-  <div style={blogStyle}>
-    <div>
-      {blog.title} {blog.author}
-      <button onClick={() => setCollapsed(!collapsed)}>{ collapsed ? "view" : "hide" }</button>
+    <div style={blogStyle}>
+      <div>
+        {blog.title} {blog.author}
+        <button onClick={() => setCollapsed(!collapsed)}>{ collapsed ? 'view' : 'hide' }</button>
+      </div>
+      { collapsed ? '' : blogExpanded()}
     </div>
-    { collapsed ? '' : blogExpanded()}
-  </div>
   )
 }
 

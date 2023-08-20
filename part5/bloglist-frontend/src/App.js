@@ -8,8 +8,8 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [msg, setMsg] = useState(null)
   const [msgColor, setMsgColor] = useState(null)
@@ -19,7 +19,7 @@ const App = () => {
   const showMsg = (msg, color) => {
     setMsg(msg)
     setMsgColor(color)
-    setTimeout(() => { setMsg(null); }, 5000)
+    setTimeout(() => { setMsg(null) }, 5000)
   }
 
   const handleLogin = async (event) => {
@@ -31,43 +31,43 @@ const App = () => {
       })
 
       window.localStorage.setItem(
-        "loggedBloglistUser", JSON.stringify(user)
+        'loggedBloglistUser', JSON.stringify(user)
       )
       blogService.setToken(user.token)
       setUser(user)
-      setUsername("")
-      setPassword("")
-      showMsg("Logged in", "green");
+      setUsername('')
+      setPassword('')
+      showMsg('Logged in', 'green')
 
     } catch (exception) {
-      showMsg("Wrong credentials", "red");
+      showMsg('Wrong credentials', 'red')
     }
   }
 
   const handleLogout = async (event) => {
     event.preventDefault()
-    
+
     window.localStorage.removeItem(
-      "loggedBloglistUser", JSON.stringify(user)
+      'loggedBloglistUser', JSON.stringify(user)
     )
     setUser(null)
-    showMsg("Logged out", "green")
+    showMsg('Logged out', 'green')
   }
 
   const createBlog = async (blog) => {
     try {
       await blogService.create(blog)
       blogFormRef.current.toggleVisibility()
-      showMsg(`A new blog ${blog.title} by ${blog.author} added`, "green")
+      showMsg(`A new blog ${blog.title} by ${blog.author} added`, 'green')
     } catch (exception) {
-      showMsg(`A new blog ${blog.title} by ${blog.author} was not added`, "red")
+      showMsg(`A new blog ${blog.title} by ${blog.author} was not added`, 'red')
     }
     await refreshBlogs()
   }
 
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser")
+    const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
@@ -79,7 +79,7 @@ const App = () => {
     const blogs = await blogService.getAll()
     setBlogs(blogs)
   }
-  
+
   const removeBlog = async (blog) => {
     if (window.confirm(`Remove ${blog.id} by ${blog.author}?`)) {
       await blogService.remove(blog.id)
@@ -91,7 +91,7 @@ const App = () => {
     await blogService.update(blog.id, blog)
     await refreshBlogs()
   }
-  
+
   useEffect(() => {
     refreshBlogs()
   }, [])
@@ -101,19 +101,19 @@ const App = () => {
       <div>
         username
         <input
-        type="text"
-        value={username}
-        name="Username"
-        onChange={({ target }) => setUsername(target.value)}
+          type="text"
+          value={username}
+          name="Username"
+          onChange={({ target }) => setUsername(target.value)}
         />
       </div>
       <div>
         password
         <input
-        type="text"
-        value={password}
-        name="Password"
-        onChange={({ target }) => setPassword(target.value)}
+          type="text"
+          value={password}
+          name="Password"
+          onChange={({ target }) => setPassword(target.value)}
         />
       </div>
       <button type="submit">login</button>
@@ -133,7 +133,7 @@ const App = () => {
         <Togglable buttonLabel="create new blog" ref={blogFormRef}>
           <BlogForm createBlog={createBlog}/>
         </Togglable>
-      
+
         <h2>blogs</h2>
         {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
           <Blog key={blog.id} blog={blog} removeBlog={removeBlog} updateBlog={updateBlog} user={user}/>
