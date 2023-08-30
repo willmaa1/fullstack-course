@@ -1,13 +1,13 @@
 import { useState } from 'react'
 
 const Blog = ({ blog, removeBlog, updateBlog, user }) => {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
 
   const blogExpanded = () => {
     return (
       <>
         <div>{blog.url}</div>
-        <div>likes {blog.likes} <button onClick={() => { blog.likes++; updateBlog(blog) }}>like</button></div>
+        <div>likes {blog.likes} <button className='blog-like' onClick={() => { blog.likes++; updateBlog(blog) }}>like</button></div>
         <div>{blog.user.username}</div>
         { blog.user.username !== user.username ? '' : <button onClick={() => removeBlog(blog)}>remove</button> }
       </>
@@ -23,10 +23,10 @@ const Blog = ({ blog, removeBlog, updateBlog, user }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       <div>
         {blog.title} {blog.author}
-        <button onClick={() => setCollapsed(!collapsed)}>{ collapsed ? 'view' : 'hide' }</button>
+        <button className='blog-expand-toggle' onClick={() => setCollapsed(!collapsed)}>{ collapsed ? 'view' : 'hide' }</button>
       </div>
       { collapsed ? '' : blogExpanded()}
     </div>
