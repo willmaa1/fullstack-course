@@ -38,6 +38,7 @@ const App = () => {
       setUsername('')
       setPassword('')
       showMsg('Logged in', 'green')
+      await refreshBlogs()
 
     } catch (exception) {
       showMsg('Wrong credentials', 'red')
@@ -72,6 +73,7 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
+      refreshBlogs()
     }
   }, [])
 
@@ -92,15 +94,12 @@ const App = () => {
     await refreshBlogs()
   }
 
-  useEffect(() => {
-    refreshBlogs()
-  }, [])
-
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    <form id='login-form' onSubmit={handleLogin}>
       <div>
         username
         <input
+          id='login-username'
           type="text"
           value={username}
           name="Username"
@@ -110,13 +109,14 @@ const App = () => {
       <div>
         password
         <input
+          id='login-password'
           type="text"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <button id='login-login' type="submit">login</button>
     </form>
   )
 
