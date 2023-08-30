@@ -56,14 +56,17 @@ const App = () => {
   }
 
   const createBlog = async (blog) => {
+    let success = true
     try {
       await blogService.create(blog)
       blogFormRef.current.toggleVisibility()
       showMsg(`A new blog ${blog.title} by ${blog.author} added`, 'green')
     } catch (exception) {
+      success = false
       showMsg(`A new blog ${blog.title} by ${blog.author} was not added`, 'red')
     }
     await refreshBlogs()
+    return success
   }
 
 

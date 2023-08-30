@@ -7,7 +7,12 @@ const BlogForm = ({ createBlog }) => {
 
   const handleCreateBlog = async (event) => {
     event.preventDefault()
-    await createBlog({ title, author, url })
+    const success = await createBlog({ title, author, url })
+    if (success) {
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    }
   }
 
 
